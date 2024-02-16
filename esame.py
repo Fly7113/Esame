@@ -145,25 +145,58 @@ class CSVTimeseriesFile(CSVFile):
         # Return the list of nested lists
         return data
 
-def calc_yearly_averages(data):
+def compute_increments(data, first_year, last_year):
     """
-    Calculate the yearly averages of a given dataset.
+    Compute the positive increments of yearly averages within a given range of years.
 
-    Args:
-        data (list of lists): A list of nested lists representing the dataset. Each nested list contains
-                              two elements: the first element is a string representing the date in the format
-                              'YYYY-MM', and the second element is a numeric value.
+    Parameters:
+    - data (list): A list of lists containing yearly data.
+    - first_year (str): The first year of interest.
+    - last_year (str): The last year of interest.
 
     Returns:
-        list: A list of lists representing the yearly averages. Each nested list contains two elements:
-              the first element is a string representing the year in the format 'YYYY', and the second
-              element is the average value for that year.
+    - increments (dict | list): A dictionary containing the years as keys and the positive increments as values.
+                         If no positive increments are found, an empty list is returned.
     """
-    
-    # Initialize the list of lists
+
+    # Initialize the list averages (format: [[year, average], ...])
     averages = []
 
-    # Initialize the variables
+    # Initialize the list deltas between averages (format: [[year(n)-year(n+1), delta], ...])
+    deltas = []
+
+    # Initialize the dictionary of positive increments (format: {year(n)-year(n+1): increment, ...})
+    increments = {}
+
+    # Check if the first_year and last_year are strings
+    if not isinstance(first_year, str):
+        raise ExamException("Errore: il primo anno non è passato come stringa")
+    if not isinstance(last_year, str):
+        raise ExamException("Errore: il secondo anno non è passato come stringa")
+
+    # If the first_year is not an integer, raise an exception
+    try:
+        first_year = int(first_year)
+    except ValueError:
+        raise ExamException("Errore: primo anno non numerico")
+    # If the last_year is not an integer, raise an exception
+    try:
+        last_year = int(last_year)
+    except ValueError:
+        raise ExamException("Errore: secondo anno non numerico")
+
+    # Check if the first_year is less than or equal to the last_year
+    if first_year >= last_year:
+        # If the first_year is greater than the last_year, raise an exception
+        raise ExamException("Errore: primo anno maggiore o uguale all'ultimo")
+
+    # Check if the first_year and last_year are in the range of the data provided
+    if first_year < int(data[0][0][0:4]) or last_year > int(data[-1][0][0:4]):
+        # If the first_year and last_year are not in the range of the data provided, raise an exception
+        raise ExamException("Errore: anno non in range")
+    
+
+    # Initialize the variables to calculate the averages
     year = data[0][0][0:4]
     sum = 0
     count = 0
@@ -185,88 +218,14 @@ def calc_yearly_averages(data):
     # Add the last year and the average to the list
     averages.append([year, sum / count])
 
-    # Return the list of lists
-    return averages
-
-def calc_yearly_averages_deltas(data):
-    """
-    Calculate the yearly averages deltas.
-
-    Parameters:
-    - data (list of lists): The input data containing yearly averages. Each list contains two elements:
-                            the first element is a string representing the year in the format 'YYYY',
-                            and the second element is the average value for that year.
-
-    Returns:
-    - deltas (list of lists): The list of lists containing the yearly averages deltas. Each list contains
-                              two elements: the first element is a string representing the years in the format
-                              'YYYY-YYYY', and the second element is the delta between the average value of
-                              the year and the average value of the previous year.
-    """
-
-    # Initialize the list of lists
-    deltas = []
-
-    data = calc_yearly_averages(data)
-
-    # Iterate over the list of lists
-    for i in range(len(data) - 1):
+    # Iterate over the list of averages
+    for i in range(len(averages) - 1):
         # Calculate the delta
-        delta = data[i + 1][1] - data[i][1]
+        delta = averages[i + 1][1] - averages[i][1]
         # Add the delta to the list
-        deltas.append([data[i][0] + '-' + data[i + 1][0], delta])
+        deltas.append([averages[i][0] + '-' + averages[i + 1][0], delta])
 
-    # Return the list of lists
-    return deltas
-
-def compute_increments(data, first_year, last_year):
-    """
-    Compute the positive increments of yearly averages within a given range of years.
-
-    Parameters:
-    - data (list): A list of lists containing yearly data.
-    - first_year (str): The first year of interest.
-    - last_year (str): The last year of interest.
-
-    Returns:
-    - increments (dict | list): A dictionary containing the years as keys and the positive increments as values.
-                         If no positive increments are found, an empty list is returned.
-    """
-
-    # Initialize the dictionary
-    increments = {}
-
-    # Check if the first_year and last_year are strings
-    if not isinstance(first_year, str):
-        raise ExamException("Errore: il primo anno non è passato come stringa")
-    if not isinstance(last_year, str):
-        raise ExamException("Errore: il secondo anno non è passato come stringa")
-
-    try:
-        first_year = int(first_year)
-    except ValueError:
-        # If the first_year is not an integer, raise an exception
-        raise ExamException("Errore: primo anno non numerico")
-    try:
-        last_year = int(last_year)
-    except ValueError:
-        # If the last_year is not an integer, raise an exception
-        raise ExamException("Errore: secondo anno non numerico")
-
-    # Check if the first_year is less than or equal to the last_year
-    if first_year >= last_year:
-        # If the first_year is greater than the last_year, raise an exception
-        raise ExamException("Errore: primo anno maggiore o uguale all'ultimo")
-
-    # Check if the first_year and last_year are in the range of the data provided
-    if first_year < int(data[0][0][0:4]) or last_year > int(data[-1][0][0:4]):
-        # If the first_year and last_year are not in the range of the data provided, raise an exception
-        raise ExamException("Errore: anno non in range")
-
-    # Calculate the deltas of the yearly averages
-    deltas = calc_yearly_averages_deltas(data)
-
-    # Iterate over the list of lists
+    # Iterate over the list of deltas
     for i in range(len(deltas)):
         # Check if the year is in the range of interest
         if int(deltas[i][0][0:4]) >= first_year and int(deltas[i][0][5:9]) <= last_year:

@@ -1,8 +1,6 @@
 import unittest
 from esame import ExamException
 from esame import CSVTimeseriesFile
-from esame import calc_yearly_averages
-from esame import calc_yearly_averages_deltas
 from esame import compute_increments
 
 class TestExamException(unittest.TestCase):
