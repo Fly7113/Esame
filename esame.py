@@ -114,10 +114,6 @@ class CSVTimeseriesFile(CSVFile):
             if month < 1 or month > 12:
                 continue
 
-            # Any year out of range is not acceptable
-            if year < 1949 or year > 1960:
-                continue
-
             if len(data) > 0:
                 # Check if the year is older than the last year in the list or if the year is the same and the month is older than or the same of the last month in the list
                 if year < int(data[-1][0][0:4]) or (year == int(data[-1][0][0:4]) and month <= int(data[-1][0][5:7])):
