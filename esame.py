@@ -138,5 +138,9 @@ class CSVTimeseriesFile(CSVFile):
         # Close the file
         file.close()
 
+        if len(data) == 0:
+            # If the list is empty, raise an exception
+            raise ExamException("Errore: nessun dato valido presente")
+
         # Return the list of nested lists
         return data
