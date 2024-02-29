@@ -182,7 +182,8 @@ def find_min_max(data):
     # Iterate over the dictionary
     for year in list(years):
         # Sort the values of the year
-        years[year].sort(key=lambda x: x[1])
+        # Note: python .sort() method is stable, so if two months have the same value their order will be ascending, as they were read from the file
+        years[year].sort(key=lambda tuple: tuple[1])
 
         # Add the minimum and maximum values to the dictionary
         result[year] = {"min": [years[year][0][0]], "max": [years[year][-1][0]]}
@@ -193,6 +194,7 @@ def find_min_max(data):
             # Append the month to the list
             result[year]["min"].append(years[year][counter][0])
             counter += 1
+        # Note: the months are already sorted ascendingly, as they were read from the file
         
         # Check if the year has more than one month as maximum
         counter = 2
@@ -200,7 +202,7 @@ def find_min_max(data):
             # Append the month to the list
             result[year]["max"].append(years[year][-counter][0])
             counter += 1
-        # Reverse the lists
+        # Reverse the lists, since the months were appended in descending order
         result[year]["max"].reverse()
 
     return result
