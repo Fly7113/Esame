@@ -151,8 +151,8 @@ class CSVTimeseriesFile(CSVFile):
 def find_min_max(data):
     """
     Finds the minimum and maximum values for each year in a list of nested lists.
-    If the year has only one month, the value for that year should be an empty dictionary.
-    If the yar has more than one month as maximum or minimum, every of these months must be present in the output.
+    If the year has more than one month as maximum or minimum, every of these months must be present in the output.
+    If the year has all the months with the same value, all the months must be present in the output, both in the maximum and in the minimum field.
 
     Args:
         data (list): A list of nested lists. Each nested list contains a date (in the format YYYY-MM) and a numeric value.
@@ -181,12 +181,6 @@ def find_min_max(data):
 
     # Iterate over the dictionary
     for year in list(years):
-        # If the year has only one month, remove it from the dictionary
-        if len(years[year]) == 1:
-            del years[year]
-
-    # Iterate over the dictionary
-    for year in list(years):
         # Sort the values of the year
         years[year].sort(key=lambda x: x[1])
 
@@ -195,14 +189,14 @@ def find_min_max(data):
 
         # Check if the year has more than one month as minimum
         counter = 1
-        while years[year][counter][1] == years[year][0][1]:
+        while counter < len(years[year]) and years[year][counter][1] == years[year][0][1]:
             # Append the month to the list
             result[year]["min"].append(years[year][counter][0])
             counter += 1
         
         # Check if the year has more than one month as maximum
         counter = 2
-        while years[year][-counter][1] == years[year][-1][1]:
+        while counter <= len(years[year]) and years[year][-counter][1] == years[year][-1][1]:
             # Append the month to the list
             result[year]["max"].append(years[year][-counter][0])
             counter += 1
