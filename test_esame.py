@@ -41,7 +41,7 @@ class TestCSVTimeseriesFile(unittest.TestCase):
 class TestFindMinMax(unittest.TestCase):
     def test_single_month_year(self):
         data = [['2022-01', 10]]
-        expected_result = {}
+        expected_result = {'2022': {'min': ['01'], 'max': ['01']}}
         self.assertEqual(find_min_max(data), expected_result)
 
     def test_multiple_months_year(self):
