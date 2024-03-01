@@ -1,6 +1,6 @@
 import unittest
 from esame import ExamException
-from esame import CSVTimeseriesFile
+from esame import CSVTimeSeriesFile
 from esame import find_min_max
 
 class TestExamException(unittest.TestCase):
@@ -22,10 +22,10 @@ class TestExamException(unittest.TestCase):
 class TestCSVTimeseriesFile(unittest.TestCase):
     def test_file_not_found(self):
         filename = 'file_not_found.csv'
-        self.assertEqual(CSVTimeseriesFile(name=filename).name, filename)
+        self.assertEqual(CSVTimeSeriesFile(name=filename).name, filename)
 
     def test_file_valid(self):
-        ts_file = CSVTimeseriesFile(name='test.csv')
+        ts_file = CSVTimeSeriesFile(name='test.csv')
         self.assertEqual(ts_file.get_data(), [
             ['1949-01', 1],
             ['1950-01', 2],
