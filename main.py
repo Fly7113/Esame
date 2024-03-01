@@ -5,7 +5,7 @@ import test_esame
 
 
 def main():
-    ts_file = CSVTimeseriesFile(name='data.csv')
+    ts_file = CSVTimeSeriesFile(name='data.csv')
     ts = ts_file.get_data()
     min_max = find_min_max(ts)
     print("\nTime series data:")
