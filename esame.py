@@ -49,7 +49,7 @@ class CSVFile:
 # ======================= #
 # CSVTimeseriesFile class #
 # ======================= #
-class CSVTimeseriesFile(CSVFile):
+class CSVTimeSeriesFile(CSVFile):
     """
     Represents a CSV file containing timeseries data.
 
